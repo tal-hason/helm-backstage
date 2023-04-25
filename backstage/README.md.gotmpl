@@ -1,0 +1,128 @@
+# Janus-IDP Backstage Helm Chart
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+---
+
+[Janus-IDP](https://janus-idp.io/) Backstage chart is an oppinionated flavor of the upstream chart located at [backstage/charts](https://github.com/backstage/charts). It extends the upstream chart with additional OpenShift specific functionality and provides oppinionated values.
+
+[Backstage](https://backstage.io) is an open platform for building developer portals. Powered by a centralized software catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly — without compromising autonomy.
+
+Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
+
+## TL;DR
+
+```console
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add backstage https://backstage.github.io/charts
+helm repo add janus-idp https://janus-idp.github.io/helm-backstage
+
+helm install my-release janus-idp/backstage
+```
+
+## Introduction
+
+This chart bootstraps a [Backstage](https://backstage.io/docs/deployment/docker) deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+
+## Prerequisites
+
+- Kubernetes 1.19+
+- Helm 3.2.0+
+- PV provisioner support in the underlying infrastructure
+- [Backstage container image](https://backstage.io/docs/deployment/docker)
+
+## Usage
+
+Chart is available in the following formats:
+
+- [Chart Repository](https://helm.sh/docs/topics/chart_repository/)
+- [OCI Artifacts](https://helm.sh/docs/topics/registries/)
+
+### Installing from the Chart Repository
+
+The following command can be used to add the chart repository:
+
+```console
+helm repo add janus-idp https://janus-idp.github.io/helm-backstage
+```
+
+Once the chart has been added, install one of the available charts:
+
+```console
+helm upgrade -i <release_name> janus-idp/backstage
+```
+
+### Installing from an OCI Registry
+
+Chart is also available in OCI format. The list of available releases can be found [here](https://github.com/janus-idp/helm-backstage/pkgs/container/charts%2Fbackstage).
+
+Install one of the available versions:
+
+```shell
+helm upgrade -i oci://ghcr.io/janus-idp/helm-backstage/backstage --version=<version>
+```
+
+> **Tip**: List all releases using `helm list`
+
+### Uninstalling the Chart
+
+To uninstall/delete the `my-backstage-release` deployment:
+
+```console
+helm uninstall my-backstage-release
+```
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+## Features
+
+This charts defaults to using the Janus-IDP built image for backstage that is OpenShift compatible:
+
+```
+quay.io/janus-idp/redhat-backstage-build:latest
+```
+
+Additionally this chart enhances the upstream Backstage chart with following OpenShift-specific features.
+
+### OpenShift Routes
+
+This chart offers a drop-in replacement for the `Ingress` resource already provided by the upstream chart via an OpenShift `Route`.
+
+Please enable it using following values:
+
+```yaml
+# values.yaml
+upstream:
+  backstage:
+    extraEnvVars:
+      - name: "APP_CONFIG_app_baseUrl"
+        value: "https://{{"{{"}} .Values.global.host {{"}}"}}"
+      - name: "APP_CONFIG_backend_baseUrl"
+        value: "https://{{"{{"}} .Values.global.host {{"}}"}}"
+      - name: "APP_CONFIG_backend_cors_origin"
+        value: "https://{{"{{"}} .Values.global.host {{"}}"}}"
+  ingress:
+    enabled: false
+route:
+  enabled: true
+  host: "{{"{{"}} .Values.global.host {{"}}"}}"
+  tls:
+    enabled: true
+
+global:
+  host: backstage.apps.example.com
+```

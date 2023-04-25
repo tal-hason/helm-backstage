@@ -1,0 +1,15 @@
+apiVersion: v2
+dependencies:
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  tags:
+  - bitnami-common
+  version: 1.x.x
+- alias: upstream
+  name: backstage
+  repository: https://backstage.github.io/charts
+  version: '>=0.18.0'
+description: A Helm chart for deploying a Backstage application
+name: backstage
+type: application
+version: 1.0.0
