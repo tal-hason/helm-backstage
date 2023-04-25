@@ -15,7 +15,7 @@ route:
   annotations: {}
 
   # -- Enable the creation of the route resource
-  enabled: false
+  enabled: true
 
   # -- Set the host attribute to a custom value. If not set, OpenShift will generate it, please make sure to match your baseUrl
   host: ""
